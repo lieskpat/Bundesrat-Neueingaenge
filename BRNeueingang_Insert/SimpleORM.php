@@ -58,12 +58,45 @@ class SimpleORM {
         try {
             $sqlHelper->beginTransaction();
             foreach ($objectArray as $brNeueingang) {
+                $this->fillValuesWithBRNeueingangObjectValues($brNeueingang
+                        , $paramPreparedStatementArray);
                 $sqlHelper->execute($sqlCommand, $paramPreparedStatementArray, 1);
-                $sqlHelper->commit();
             }
+            $sqlHelper->commit();
         } catch (Exception $exc) {
             $sqlHelper->rollback();
             echo $exc->getTraceAsString();
+        }
+    }
+
+    /**
+     * 
+     * @param type $brNeueingang
+     * @param type $paramPreparedStatementArray
+     */
+    private function fillValuesWithBRNeueingangObjectValues($brNeueingang
+    , $paramPreparedStatementArray) {
+        foreach ($paramPreparedStatementArray as $key => $value) {
+            switch ($key) {
+                case ':fileDate':
+                    $paramPreparedStatementArray[$key] = $brNeueingang
+                            ->getCreationDate();
+                //$value = $brNeueingang->getCreationDate();
+                case ':fileName':
+                    $paramPreparedStatementArray[$key] = $brNeueingang
+                            ->getLink();
+                //$value = $brNeueingang->getLink();
+                case ':betreff':
+                    $paramPreparedStatementArray[$key] = $brNeueingang
+                            ->getTitle();
+                //$value = $brNeueingang->getTitle();
+                case ':dockNumber':
+                    $paramPreparedStatementArray[$key] = $brNeueingang
+                            ->getDrsNumber();
+                //$value = $brNeueingang->getDrsNumber();
+                default:
+                    break;
+            }
         }
     }
 
