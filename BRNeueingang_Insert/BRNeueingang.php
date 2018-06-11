@@ -14,15 +14,15 @@
 class BRNeueingang {
     
     /*
-     * 
+     * @var String
      */
     private $title;
     /*
-     * 
+     * @var String
      */
     private $link;
     /*
-     * 
+     * @var \Datetime
      */
     private $creationDate;
     /*
@@ -30,11 +30,11 @@ class BRNeueingang {
      */
     private $pubDate;
     /*
-     * 
+     * @var String
      */
     private $author;
     /*
-     * 
+     * @var String
      */
     private $drsNumber;
     /*
@@ -60,22 +60,25 @@ class BRNeueingang {
 
     /**
      * 
-     * @return type
+     * @return String
      */
     public function getTitle() {
         return $this->title;
     }
 
     /**
+     * returns string representation of DateTime Object.
      * 
-     * @return type
+     * @return String
      */
     public function getCreationDate() {
         return $this->creationDate->format('Y-m-d H:i:s');
     }
     
     /**
+     * returns the DateTime Object.
      * 
+     * @return DateTime
      */
     public function getCreationDateTime() {
         return $this->creationDate;
@@ -83,7 +86,7 @@ class BRNeueingang {
 
     /**
      * 
-     * @return type
+     * @return String
      */
     public function getLink() {
         return $this->link;
@@ -99,7 +102,7 @@ class BRNeueingang {
 
     /**
      * 
-     * @return type
+     * @return String
      */
     public function getAuthor() {
         return $this->author;
@@ -107,7 +110,7 @@ class BRNeueingang {
 
     /**
      * 
-     * @return type
+     * @return String
      */
     public function getDrsNumber() {
         return $this->drsNumber;
@@ -123,17 +126,16 @@ class BRNeueingang {
 
     /**
      * 
-     * @param type $title
+     * @param String $title
      */
     public function setTitle($title) {
-
         $this->title = trim($title);
         return $this;
     }
 
     /**
      * 
-     * @param type $link
+     * @param String $link
      */
     public function setLink($link) {
         $this->link = trim($link);
@@ -142,7 +144,7 @@ class BRNeueingang {
 
     /**
      * 
-     * @param type $creationDate
+     * @param DateTime $creationDate
      */
     public function setCreationDate($creationDate) {
         $this->creationDate = $creationDate;
@@ -150,9 +152,10 @@ class BRNeueingang {
     }
 
     /**
+     * creates a DateTime object and storage to instance variable creationDate 
      * 
      * @param String $creationDate
-     * @return $this
+     * @return BRNeueingang
      */
     public function setCreationDateToDateTime($creationDate) {
         $this->creationDate = DateTime::createFromFormat(DateTime::RSS
@@ -172,7 +175,7 @@ class BRNeueingang {
 
     /**
      * 
-     * @param type $author
+     * @param String $author
      */
     public function setAuthor($author) {
         $this->author = $author;
@@ -181,7 +184,7 @@ class BRNeueingang {
 
     /**
      * 
-     * @param type $drsNumber
+     * @param String $drsNumber
      */
     public function setDrsNumber($drsNumber) {
         $this->drsNumber = $drsNumber;
@@ -249,7 +252,6 @@ class BRNeueingang {
         echo 'Titel: ' . ' ' . $this->getTitle() . "\n";
         echo 'Link: ' . ' ' . $this->getLink() . "\n";
         echo 'CreationDate: ' . ' ' . $this->getCreationDate() . "\n";
-        //echo 'CreationDate: ' . ' ' . $this->getCreationDateTime() . "\n";
         echo 'PubDate: ' . ' ' . $this->getPubDate() . "\n";
         echo 'Author: ' . ' ' . $this->getAuthor() . "\n";
         echo 'DRS: ' . ' ' . $this->getDrsNumber() . "\n";

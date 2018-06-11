@@ -14,8 +14,8 @@
 class SimpleORM {
 
     /**
+     * Constructor.
      * 
-     * @param type $sqlHelper
      */
     public function __construct() {
         
@@ -23,35 +23,34 @@ class SimpleORM {
 
     /**
      * 
-     * @param type $sqlHelper
-     * @param type $sqlCommand
-     * @param type $paramForPrepareStatementArray
-     * @return type
+     * @param \SqlHelper $sqlHelper
+     * @param String $sqlCommand
+     * @param array $paramForPrepareStatementArray
+     * @return array
      */
     public function topDokTableToBRNeueingangObject($sqlHelper, $sqlCommand
     , $paramForPrepareStatementArray) {
         $BRNeueingangObjectArray = array();
         $resultArray = $sqlHelper->execute($sqlCommand
-            , $paramForPrepareStatementArray
+                , $paramForPrepareStatementArray
         );
         foreach ($resultArray as $value) {
             $BRNeueingangObjectArray[] = BRNeueingang::create()
-                ->setTitle($value['betreff'])
-                //->setCreationDate($value['fileDate'])
-                ->setCreationDateToDateTime($value['fileDate'])
-                ->setLink($value['fileName'])
-                ->setDrsNumber($value['dokNumber']);
+                    ->setTitle($value['betreff'])
+                    ->setCreationDate(new DateTime($value['fileDate']))
+                    ->setLink($value['fileName'])
+                    ->setDrsNumber($value['dokNumber']);
         }
         return $BRNeueingangObjectArray;
     }
 
     /**
      * 
-     * @param type $objectArray
-     * @param type $paramPreparedStatementArray
-     * @param type $sqlHelper
-     * @param type $sqlCommand
-     * @param type $objectValueFromPreparedStatementArray
+     * @param array $objectArray
+     * @param array $paramPreparedStatementArray
+     * @param \SqlHelper $sqlHelper
+     * @param String $sqlCommand
+     *
      */
     public function persistBrNeueingangObjectIntoDB($objectArray
     , $paramPreparedStatementArray, $sqlHelper, $sqlCommand) {
@@ -59,8 +58,12 @@ class SimpleORM {
         try {
             $sqlHelper->getPdo()->beginTransaction();
             foreach ($objectArray as $brNeueingang) {
-                $sqlHelper->execute($sqlCommand, $this->fillValuesWithBRNeueingangObjectValues($brNeueingang
-                        , $paramPreparedStatementArray), 1);
+                $sqlHelper->execute(
+                        $sqlCommand
+                        , $this->fillValuesWithBRNeueingangObjectValues(
+                                $brNeueingang
+                                , $paramPreparedStatementArray), 1
+                );
             }
             $sqlHelper->getPdo()->commit();
         } catch (Exception $exc) {
@@ -71,19 +74,20 @@ class SimpleORM {
 
     /**
      * 
-     * @param type $brNeueingang
-     * @param type $paramPreparedStatementArray
+     * @param \BRNeueingang $brNeueingang
+     * @param array $paramPreparedStatementArray
+     * @return array
      */
     private function fillValuesWithBRNeueingangObjectValues($brNeueingang
     , $paramPreparedStatementArray) {
         $paramPreparedStatementArray[':fileDate'] = $brNeueingang
-            ->getCreationDate();
+                ->getCreationDate();
         $paramPreparedStatementArray[':filename'] = $brNeueingang
-            ->getLink();
+                ->getLink();
         $paramPreparedStatementArray[':betreff'] = $brNeueingang
-            ->getTitle();
+                ->getTitle();
         $paramPreparedStatementArray[':dockNumber'] = $brNeueingang
-            ->getDrsNumber();
+                ->getDrsNumber();
 
         return $paramPreparedStatementArray;
     }
