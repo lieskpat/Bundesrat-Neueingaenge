@@ -32,14 +32,15 @@ class SimpleORM {
     , $paramForPrepareStatementArray) {
         $BRNeueingangObjectArray = array();
         $resultArray = $sqlHelper->execute($sqlCommand
-                , $paramForPrepareStatementArray
+            , $paramForPrepareStatementArray
         );
         foreach ($resultArray as $value) {
             $BRNeueingangObjectArray[] = BRNeueingang::create()
-                    ->setTitle($value['betreff'])
-                    ->setCreationDate($value['fileDate'])
-                    ->setLink($value['fileName'])
-                    ->setDrsNumber($value['dokNumber']);
+                ->setTitle($value['betreff'])
+                //->setCreationDate($value['fileDate'])
+                ->setCreationDateToDateTime($value['fileDate'])
+                ->setLink($value['fileName'])
+                ->setDrsNumber($value['dokNumber']);
         }
         return $BRNeueingangObjectArray;
     }
@@ -56,15 +57,14 @@ class SimpleORM {
     , $paramPreparedStatementArray, $sqlHelper, $sqlCommand) {
 
         try {
-            $sqlHelper->beginTransaction();
+            $sqlHelper->getPdo()->beginTransaction();
             foreach ($objectArray as $brNeueingang) {
-                $this->fillValuesWithBRNeueingangObjectValues($brNeueingang
-                        , $paramPreparedStatementArray);
-                $sqlHelper->execute($sqlCommand, $paramPreparedStatementArray, 1);
+                $sqlHelper->execute($sqlCommand, $this->fillValuesWithBRNeueingangObjectValues($brNeueingang
+                        , $paramPreparedStatementArray), 1);
             }
-            $sqlHelper->commit();
+            $sqlHelper->getPdo()->commit();
         } catch (Exception $exc) {
-            $sqlHelper->rollback();
+            $sqlHelper->getPdo()->rollback();
             echo $exc->getTraceAsString();
         }
     }
@@ -76,28 +76,16 @@ class SimpleORM {
      */
     private function fillValuesWithBRNeueingangObjectValues($brNeueingang
     , $paramPreparedStatementArray) {
-        foreach ($paramPreparedStatementArray as $key => $value) {
-            switch ($key) {
-                case ':fileDate':
-                    $paramPreparedStatementArray[$key] = $brNeueingang
-                            ->getCreationDate();
-                //$value = $brNeueingang->getCreationDate();
-                case ':fileName':
-                    $paramPreparedStatementArray[$key] = $brNeueingang
-                            ->getLink();
-                //$value = $brNeueingang->getLink();
-                case ':betreff':
-                    $paramPreparedStatementArray[$key] = $brNeueingang
-                            ->getTitle();
-                //$value = $brNeueingang->getTitle();
-                case ':dockNumber':
-                    $paramPreparedStatementArray[$key] = $brNeueingang
-                            ->getDrsNumber();
-                //$value = $brNeueingang->getDrsNumber();
-                default:
-                    break;
-            }
-        }
+        $paramPreparedStatementArray[':fileDate'] = $brNeueingang
+            ->getCreationDate();
+        $paramPreparedStatementArray[':filename'] = $brNeueingang
+            ->getLink();
+        $paramPreparedStatementArray[':betreff'] = $brNeueingang
+            ->getTitle();
+        $paramPreparedStatementArray[':dockNumber'] = $brNeueingang
+            ->getDrsNumber();
+
+        return $paramPreparedStatementArray;
     }
 
 }
