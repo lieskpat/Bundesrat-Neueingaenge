@@ -6,11 +6,11 @@
  * and open the template in the editor.
  */
 
-require_once 'BRNeueingang.php';
-require_once 'Config.php';
-require_once 'SqlHelper.php';
-require_once 'SimpleORM.php';
-require_once 'Util.php';
+require_once 'Classes_BR\BRNeueingang.php';
+require_once 'Classes_BR\Config.php';
+require_once 'Classes_BR\SqlHelper.php';
+require_once 'Classes_BR\SimpleORM.php';
+require_once 'Classes_BR\Util.php';
 
 $sqlHelper = new SqlHelper(
     Config::DBSOURCE, Config::USERNAME, Config::PASSWORD
@@ -22,7 +22,9 @@ $brNeueingangTotalObjectArray = Util::xmlToBRNeueingangObject(
 );
 
 $simpleOrm->persistBrNeueingangObjectIntoDB($brNeueingangTotalObjectArray
-    , Util::PREPARED_STATEMENT_ARRAY, $sqlHelper, Util::INSERT_COMMAND);
+    , Util::PREPARED_STATEMENT_ARRAY, $sqlHelper, Util::INSERT_COMMAND
+    , array("SimpleORM", 'fillValuesWithBRNeueingangObjectValues')
+);
 
 foreach ($brNeueingangTotalObjectArray as $value) {
     $value->toString();

@@ -18,7 +18,7 @@ $brNeueingangTotalObjectArray = xmlToBRNeueingangObject($simpleXmlElementTotal->
 
 
 
-$sqlHelper = new SqlHelper(Config::DBSOURCE, Config::USERNAME, Config::PASSWORD);
+$sqlHelper = new SqlHelper(ConfigLiv::DBSOURCE, ConfigLiv::USERNAME, ConfigLiv::PASSWORD);
 
 //foreach ($brNeueingangTotalObjectArray as $brNeueingang) {
 //    $sqlHelper->execute($sqlInsertCommand, [

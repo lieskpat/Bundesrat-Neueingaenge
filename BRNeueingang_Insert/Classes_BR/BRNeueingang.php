@@ -12,10 +12,10 @@
  * @author Lieske
  */
 class BRNeueingang {
-    
     /*
      * @var String
      */
+
     private $title;
     /*
      * @var String
@@ -41,6 +41,11 @@ class BRNeueingang {
      * 
      */
     private $hashValue;
+    /**
+     *
+     * @var boolean 
+     */
+    private $lsaRelevant;
 
     /**
      * Constructor
@@ -74,7 +79,7 @@ class BRNeueingang {
     public function getCreationDate() {
         return $this->creationDate->format('Y-m-d H:i:s');
     }
-    
+
     /**
      * returns the DateTime Object.
      * 
@@ -123,7 +128,26 @@ class BRNeueingang {
     public function getHashValue() {
         return $this->hashValue;
     }
+    
+    /**
+     * 
+     * @return String
+     */
+    function getLsaRelevant() {
+        return $this->lsaRelevant;
+    }
 
+    /**
+     * 
+     * @param String $lsaRelevant
+     * @return $this
+     */
+    function setLsaRelevant($lsaRelevant) {
+        $this->lsaRelevant = $lsaRelevant;
+        return $this;
+    }
+
+    
     /**
      * 
      * @param String $title
@@ -256,6 +280,7 @@ class BRNeueingang {
         echo 'Author: ' . ' ' . $this->getAuthor() . "\n";
         echo 'DRS: ' . ' ' . $this->getDrsNumber() . "\n";
         echo 'Hash: ' . ' ' . $this->getHashValue() . "\n";
+        echo 'Sachsen-Anhalt Relevant: ' . ' ' . $this->getLsaRelevant() . "\n";
     }
 
     /**
@@ -274,7 +299,7 @@ class BRNeueingang {
             if ($this->getHashValue() == $object->getHashValue()) {
                 if ($this->title == $object->getTitle() &&
                     $this->link == $object->getLink() &&
-                    $this->drsNumber == $object->getDrsNumber) {
+                    $this->isEqualDrsNumber($object->getDrsNumber())) {
                     return TRUE;
                 } else {
                     return FALSE;
@@ -282,6 +307,19 @@ class BRNeueingang {
             } else {
                 return FALSE;
             }
+        } else {
+            return FALSE;
+        }
+    }
+
+    /**
+     * 
+     * @param String $drsNumber
+     * @return boolean
+     */
+    public function isEqualDrsNumber($drsNumber) {
+        if ($this->drsNumber === $drsNumber) {
+            return TRUE;
         } else {
             return FALSE;
         }

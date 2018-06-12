@@ -6,58 +6,64 @@
  * and open the template in the editor.
  */
 
-require_once 'SqlHelper.php';
-require_once 'SimpleORM.php';
-require_once 'Config.php';
-require_once 'BRNeueingang.php';
-require_once 'Util.php';
+require_once 'Classes_BR\SqlHelper.php';
+require_once 'Classes_BR\SimpleORM.php';
+require_once 'Classes_BR\Config.php';
+require_once 'Classes_BR\BRNeueingang.php';
+require_once 'Classes_BR\Util.php';
 
 //Hole alle 6_0_BR_Neueingaenge aus DB und erstelle Objekte aus result row
 $sqlHelper = new SqlHelper(
-        Config::DBSOURCE, Config::USERNAME, Config::PASSWORD
+    Config::DBSOURCE, Config::USERNAME, Config::PASSWORD
 );
 $simpleOrm = new SimpleORM();
-$sqlCommand = 'select betreff, fileDate, fileName, dokNumber '
-        . 'from tx_delegates_domain_model_topdok where dokType = :dokType';
+$sqlCommand = 'select betreff, fileDate, fileName, dokNumber, kurzbez '
+    . 'from tx_delegates_domain_model_topdok where dokType = :dokType';
 
 $brNeueingangObjectArrayFromDB = $simpleOrm->topDokTableToBRNeueingangObject(
-        $sqlHelper
-        , $sqlCommand
-        , array(':dokType' => '6_0_BR_Neueingaenge')
+    $sqlHelper
+    , $sqlCommand
+    , array(':dokType' => '6_0_BR_Neueingaenge')
 );
-
+echo 'Neueingang from DB' . "\n";
+echo '----------------------------------------------------------------------' . "\n";
+echo count($brNeueingangObjectArrayFromDB) . "\n";
 foreach ($brNeueingangObjectArrayFromDB as $brNeueingang) {
     $brNeueingang->toString();
     echo '-------------------------------------------' . "\n";
 }
-echo count($brNeueingangObjectArrayFromDB);
 
 //Lese rss xml http://www.bundesrat.de/SiteGlobals/Functions/RSSFeed/RSSGenerator_Announcement.xml ein
 //und erstelle Objekte (NEU)
 
 $simpleXmlElementUpdate = simplexml_load_file('RSSGenerator_Announcement.xml');
 $brNeueingangObjectArrayFromRss = Util::xmlToBRNeueingangObject(
-                $simpleXmlElementUpdate->channel->item
+        $simpleXmlElementUpdate->channel->item
 );
 
-//foreach ($brNeueingangObjectArrayFromRss as $brNeueingang) {
-//    $brNeueingang->toString();
-//    echo '-------------------------------------------' . "\n";
-//}
+echo 'Neueingang from RSS' . "\n";
+echo '----------------------------------------------------------------------' . "\n";
+echo count($brNeueingangObjectArrayFromRss) . "\n";
+foreach ($brNeueingangObjectArrayFromRss as $brNeueingang) {
+    $brNeueingang->toString();
+    echo '-------------------------------------------' . "\n";
+}
 //Vergleiche Objekte (NEU) mit Objekten aus DB
 $newBRNeueingang = array();
-foreach ($brNeueingangObjectArrayFromDB as $brNeueingangFromDB) {
-    foreach ($brNeueingangObjectArrayFromRss as $brNeueingangFromRss) {
-        if (!$brNeueingangFromDB->equals($brNeueingangFromRss)) {
+foreach ($brNeueingangObjectArrayFromRss as $brNeueingangFromRss) {
+    foreach ($brNeueingangObjectArrayFromDB as $brNeueingangFromDB) {
+        if (!$brNeueingangFromRss->isEqualDrsNumber($brNeueingangFromDB->getDrsNumber())) {
             $newBRNeueingang[] = $brNeueingangFromRss;
         }
     }
 }
-
-//foreach ($newBRNeueingang as $brNeueingang) {
-//    $brNeueingang->toString();
-//    echo '-------------------------------------------' . "\n";
-//}
+echo 'Vergleich from RSS/DB' . "\n";
+echo '----------------------------------------------------------------------' . "\n";
+echo count($newBRNeueingang) . "\n";
+foreach ($newBRNeueingang as $brNeueingang) {
+    $brNeueingang->toString();
+    echo '-------------------------------------------' . "\n";
+}
 
 //alle Objekte die nicht in DB sind persistieren
 //$simpleOrm->persistBrNeueingangObjectIntoDB(

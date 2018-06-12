@@ -6,6 +6,8 @@
  * and open the template in the editor.
  */
 
+require_once 'BRNeueingang.php';
+
 /**
  * Description of SimpleORM
  *
@@ -32,14 +34,15 @@ class SimpleORM {
     , $paramForPrepareStatementArray) {
         $BRNeueingangObjectArray = array();
         $resultArray = $sqlHelper->execute($sqlCommand
-                , $paramForPrepareStatementArray
+            , $paramForPrepareStatementArray
         );
         foreach ($resultArray as $value) {
             $BRNeueingangObjectArray[] = BRNeueingang::create()
-                    ->setTitle($value['betreff'])
-                    ->setCreationDate(new DateTime($value['fileDate']))
-                    ->setLink($value['fileName'])
-                    ->setDrsNumber($value['dokNumber']);
+                ->setTitle($value['betreff'])
+                ->setCreationDate(new DateTime($value['fileDate']))
+                ->setLink($value['fileName'])
+                ->setDrsNumber($value['dokNumber'])
+                ->setLsaRelevant($value['kurzbez']);
         }
         return $BRNeueingangObjectArray;
     }
@@ -50,19 +53,20 @@ class SimpleORM {
      * @param array $paramPreparedStatementArray
      * @param \SqlHelper $sqlHelper
      * @param String $sqlCommand
+     * @param array $callbackFunction 
      *
      */
     public function persistBrNeueingangObjectIntoDB($objectArray
-    , $paramPreparedStatementArray, $sqlHelper, $sqlCommand) {
+    , $paramPreparedStatementArray, $sqlHelper, $sqlCommand, $callbackFunction) {
 
         try {
             $sqlHelper->getPdo()->beginTransaction();
             foreach ($objectArray as $brNeueingang) {
                 $sqlHelper->execute(
-                        $sqlCommand
-                        , $this->fillValuesWithBRNeueingangObjectValues(
-                                $brNeueingang
-                                , $paramPreparedStatementArray), 1
+                    $sqlCommand
+                    //, $this->fillValuesWithBRNeueingangObjectValues(
+                    , call_user_func($callbackFunction, $brNeueingang
+                        , $paramPreparedStatementArray), 1
                 );
             }
             $sqlHelper->getPdo()->commit();
@@ -81,14 +85,28 @@ class SimpleORM {
     private function fillValuesWithBRNeueingangObjectValues($brNeueingang
     , $paramPreparedStatementArray) {
         $paramPreparedStatementArray[':fileDate'] = $brNeueingang
-                ->getCreationDate();
+            ->getCreationDate();
         $paramPreparedStatementArray[':filename'] = $brNeueingang
-                ->getLink();
+            ->getLink();
         $paramPreparedStatementArray[':betreff'] = $brNeueingang
-                ->getTitle();
+            ->getTitle();
         $paramPreparedStatementArray[':dockNumber'] = $brNeueingang
-                ->getDrsNumber();
+            ->getDrsNumber();
+        $paramPreparedStatementArray[':importid'] = $brNeueingang
+            ->getHashValue();
 
+        return $paramPreparedStatementArray;
+    }
+
+    /**
+     * 
+     * @param \BRNeueingang $brNeueingang
+     * @param array $paramPreparedStatementArray
+     * @return array Description
+     */
+    private function fillValueUpdateBRNeueingangObjectValue($brNeueingang, $paramPreparedStatementArray) {
+        $paramPreparedStatementArray[':kurzbez'] = $brNeueingang->getLsaRelevant();
+        $paramPreparedStatementArray[':dokNumber'] = $brNeueingang->getDrsNumber();
         return $paramPreparedStatementArray;
     }
 
