@@ -26,10 +26,10 @@ $drsNumberArray = array_unique($exchangeMailBox->getAllSearchStringsFromAllMailB
         '/[0-9]{1,4}\/[0-9]{1,3}\(?[a-zA-Z]*\)?/'
         , 1514761200)
 );
-foreach ($drsNumberArray as $drsNumber) {
-    echo $drsNumber . "\n";
-}
+
+Util::echoArrayValues($drsNumberArray);
 echo count($drsNumberArray) . "\n";
+
 $exchangeConnection->closeConnection();
 $fileConnection->closeConnection();
 
@@ -44,30 +44,18 @@ $brNeueingangObjectArrayFromDB = $simpleOrm->topDokTableToBRNeueingangObject(
     , array(':dokType' => '6_0_BR_Neueingaenge')
 );
 
-foreach ($brNeueingangObjectArrayFromDB as $value) {
-    $value->toString();
-    echo '----------------------------------------------------------------' . "\n";
-}
+Util::echoBRNeueingangArray($brNeueingangObjectArrayFromDB);
 echo count($brNeueingangObjectArrayFromDB) . "\n";
 
-$equalDrsNumberArray = array();
-foreach ($brNeueingangObjectArrayFromDB as $brNeueingangFromDB) {
-    foreach ($drsNumberArray as $drsNumber) {
-        if ($brNeueingangFromDB->isEqualDrsNumber($drsNumber)) {
-            $brNeueingangFromDB->setLsaRelevant('Sachsen-Anhalt');
-            $equalDrsNumberArray[] = $brNeueingangFromDB;
-        }
-    }
-}
+$equalDrsNumberArray = Util::updateObjectsFromLivList($brNeueingangObjectArrayFromDB, $drsNumberArray);
+
 echo '********************************************************************' . "\n";
-foreach ($equalDrsNumberArray as $value) {
-    $value->toString();
-    echo '----------------------------------------------------------------' . "\n";
-}
+Util::echoBRNeueingangArray($equalDrsNumberArray);
 echo count($equalDrsNumberArray);
 
 $sqlUpdateCommand = "update tx_delegates_domain_model_topdok set kurzbez = :kurzbez  where dokNumber = :dokNumber";
-$simpleOrm->persistBrNeueingangObjectIntoDB($equalDrsNumberArray
+$simpleOrm->persistBrNeueingangObjectIntoDB(
+    $equalDrsNumberArray
     , array(':kurzbez' => '', ':dokNumber' => '')
     , $sqlHelper, $sqlUpdateCommand
     , array("SimpleORM", 'fillValueUpdateBRNeueingangObjectValue')

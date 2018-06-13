@@ -13,11 +13,15 @@
  */
 class SqlHelper {
 
+    /**
+     *
+     * @var \PDO 
+     */
     private $pdo;
 
     /**
      * 
-     * @param type $dsn
+     * @param String $dsn
      * @param String $userName
      * @param String $password
      */
@@ -35,7 +39,7 @@ class SqlHelper {
 
     /**
      * 
-     * @param type $dsn
+     * @param String $dsn
      * @param String $userName
      * @param String $password
      */
@@ -45,7 +49,7 @@ class SqlHelper {
 
     /**
      * 
-     * @param type $dsn
+     * @param String $dsn
      * @param String $userName
      * @param String $password
      */

@@ -68,6 +68,7 @@ class Util {
     );
 
     /**
+     * build objects from xml array.
      * 
      * @param type $xmlArray
      * @return \BRNeueingang
@@ -84,6 +85,92 @@ class Util {
                 ->setHashValue();
         }
         return $BRNeueingangObjectArray;
+    }
+
+    /**
+     * get array with drsNumber from BRNeueingang object array.
+     * 
+     * @param array $brNeueingangArray
+     * @return array
+     */
+    public static function getArrayWithDrsNumber($brNeueingangArray) {
+        $drsNumberArray = array();
+        foreach ($brNeueingangArray as $brNeueingang) {
+            $drsNumberArray[] = $brNeueingang->getDrsNumber();
+        }
+        return $drsNumberArray;
+    }
+
+    /**
+     * get a BRNeueingang object array of given drsNumbers.
+     * 
+     * @param array $drsNumberArray
+     * @param array $RSSObjectArray
+     * @return array $newRSSObjects with \BRNeueiengang objects.
+     */
+    public static function drsNumberToObject($drsNumberArray, $RSSObjectArray) {
+        $newRSSObjects = array();
+        foreach ($drsNumberArray as $drsNumber) {
+            $newRSSObjects[] = Util::findObjectFromDrsNumber($drsNumber, $RSSObjectArray);
+        }
+        return $newRSSObjects;
+    }
+
+    /**
+     * find BRNeueingang object of given Drsnumber.
+     * 
+     * @param String $drsNumber
+     * @param array $objectArray
+     * @return \BRNeueingang object
+     */
+    public static function findObjectFromDrsNumber($drsNumber, $objectArray) {
+        foreach ($objectArray as $object) {
+            if ($object->isEqualDrsNumber($drsNumber)) {
+                return $object;
+            }
+        }
+    }
+
+    /**
+     * update DB entry from liv mail box.
+     * 
+     * @param array $brNeueingangObjectArray
+     * @param String $drsNumberArray
+     * @return array
+     */
+    public static function updateObjectsFromLivList($brNeueingangObjectArray, $drsNumberArray) {
+        $equalDrsNumberArray = array();
+        foreach ($brNeueingangObjectArray as $brNeueingang) {
+            foreach ($drsNumberArray as $drsNumber) {
+                if ($brNeueingang->isEqualDrsNumber($drsNumber)) {
+                    $brNeueingang->setLsaRelevant('Sachsen-Anhalt');
+                    $equalDrsNumberArray[] = $brNeueingang;
+                }
+            }
+        }
+        return $equalDrsNumberArray;
+    }
+
+    /**
+     * 
+     * @param array $array
+     */
+    public static function echoArrayValues($array) {
+        foreach ($array as $value) {
+            echo $value . "\n";
+        }
+    }
+
+    /**
+     * show object properties. 
+     * 
+     * @param array $brNeueingangObjectArray
+     */
+    public static function echoBRNeueingangArray($brNeueingangObjectArray) {
+        foreach ($brNeueingangObjectArray as $value) {
+            $value->toString();
+            echo '----------------------------------------------------------------' . "\n";
+        }
     }
 
 }

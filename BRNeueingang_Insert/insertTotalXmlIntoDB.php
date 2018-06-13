@@ -26,7 +26,4 @@ $simpleOrm->persistBrNeueingangObjectIntoDB($brNeueingangTotalObjectArray
     , array("SimpleORM", 'fillValuesWithBRNeueingangObjectValues')
 );
 
-foreach ($brNeueingangTotalObjectArray as $value) {
-    $value->toString();
-    echo '-------------------------------------------' . "\n";
-}
+Util::echoBRNeueingangArray($brNeueingangTotalObjectArray);

@@ -14,6 +14,6 @@
 class ConfigLiv {
     
     const USERNAME = 'lt\liv60';
-    const PASSWORD = 'password';
+    const PASSWORD = 'liv60';
     const EXCHANGE_SOURCE = '{exchange3.lt.lsa-net.de:993/imap/ssl/novalidate-cert}INBOX';
 }
