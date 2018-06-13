@@ -14,7 +14,7 @@
 class Config {
 
     const USERNAME = 'root';
-    const PASSWORD = 'Start123+++';
+    const PASSWORD = 'password';
     const DBSOURCE = 'mysql:dbname=lt7_db;host=192.168.60.128';
     const BRRSSXML = 'http://www.bundesrat.de/SiteGlobals/Functions/RSSFeed/RSSGenerator_Announcement.xml';
 
